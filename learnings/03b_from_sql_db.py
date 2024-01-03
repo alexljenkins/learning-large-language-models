@@ -1,7 +1,7 @@
 """
 This is an example of allowing the LLM to query your database/data directly.
 Easily swap out to different data sources or llms - but be careful as
-the LLM can run code directly against the data.
+the LLM can run code directly against the data (ie drop table).
 """
 from dotenv import load_dotenv
 

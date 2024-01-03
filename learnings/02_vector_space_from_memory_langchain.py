@@ -1,3 +1,10 @@
+"""
+Uses Langchain to:
+1. Load and split document text into chunks
+2. create a vector space from the embeddings by sending them to OpenAI's API (storing the results in memory).
+3. create a QA system that retrieves semantically similar chunks from the vector store and sends them as context with the question to OpenAI's chatbot
+"""
+
 from dotenv import load_dotenv
 
 from langchain.document_loaders import DirectoryLoader

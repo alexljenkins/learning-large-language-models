@@ -1,3 +1,7 @@
+"""
+Basic setup to use langchain to interact with OpenAI's API and just get embeddings for text.
+"""
+
 import os
 from dotenv import load_dotenv
 from langchain.embeddings import OpenAIEmbeddings

@@ -2,6 +2,7 @@
 Generic transformation of the text files into a
 pandas dataframe and sqlite database
 for further analysis.
+Creating a single line of dialogue as a df row - with additional metadata.
 """
 import glob
 import pandas as pd
