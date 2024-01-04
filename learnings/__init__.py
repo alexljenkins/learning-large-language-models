@@ -1,0 +1,1 @@
+# https://github.com/afuh/rick-and-morty-api
