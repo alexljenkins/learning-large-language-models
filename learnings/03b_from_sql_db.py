@@ -18,6 +18,7 @@ llm = OpenAI(temperature=0)
 db_chain = SQLDatabaseChain.from_llm(llm, db, verbose=True)
 
 db_chain.run("Describe the full_script table for me, what columns and content does it contain?")
-
 db_chain.run("Rank the characters from most to least lines of dialogue, including only those with more than 50 lines, ignore the character 'DIRECTION'. Do not set any other limits.")
 db_chain.run("Who is Morty in love with?")
+db_chain.run("How many different characters are there in the database? Your result must be a single number from the SQLResult. Don't forget to unpack it from the list and tuple.")
+db_chain.run("What does Wubba-lubba-dub-dub mean?")
