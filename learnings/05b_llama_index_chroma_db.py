@@ -1,3 +1,6 @@
+"""
+TrafilaturaWebReader is a web scrapping agent that can extra web data.
+"""
 from dotenv import load_dotenv
 
 import chromadb

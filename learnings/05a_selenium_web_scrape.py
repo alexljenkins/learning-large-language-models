@@ -1,3 +1,7 @@
+"""
+Just using the old method of web scrapping to ensure exact data can be extract when needed.
+The next method (in b) uses AI web scrapping bots.
+"""
 from time import sleep
 
 from selenium.webdriver.common.by import By
