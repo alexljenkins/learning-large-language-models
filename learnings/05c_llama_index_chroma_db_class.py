@@ -1,3 +1,9 @@
+"""
+Same as 5b but transformed the code into a reusable class that I then used on 2 different
+datasets to test the implementation.
+See the api and implementation files for this code to see it in action with a API endpoint.
+"""
+
 import pickle
 from dotenv import load_dotenv
 
