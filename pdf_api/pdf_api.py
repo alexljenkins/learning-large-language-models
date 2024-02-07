@@ -1,5 +1,6 @@
 import re
 from typing import List, Union
+from pathlib import Path
 
 from pydantic import BaseModel
 import fitz
@@ -21,7 +22,7 @@ class FileSearchResult(BaseModel):
 
 class ResponseModel(BaseModel):
     results: List[FileSearchResult]
-    
+
 
 async def search_lines(text: str, search_string: str):
     results = []
@@ -101,21 +102,11 @@ async def search_in_multiple_pdfs(files: List[UploadFile] = File(...), search: s
 
 @app.get("/")
 async def main():
-    # load content fron frontend.html
-    from pathlib import Path
+    # load content from frontend.html
     with open(Path(__file__).parent / "frontend.html", "r") as file:
         content = file.read()
-        print(content)
     return HTMLResponse(content=content)
 
 
 if __name__ == '__main__':
     uvicorn.run("pdf_api:app", host="0.0.0.0", port=8000, reload=True)
-
-from pathlib import Path
-filepath = Path(__file__).parent / "frontend.html"
-print(filepath)
-with open(filepath, "r") as file:
-    print(filepath)
-    content = file.read()
-    print(file)
