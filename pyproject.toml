@@ -21,6 +21,7 @@ lxml = "4.9.2"
 torch = "^2.1.2"
 transformers = "^4.36.2"
 openllm = "^0.4.41"
+pymupdf = "^1.23.21"
 
 
 [build-system]
