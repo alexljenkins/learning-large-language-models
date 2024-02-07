@@ -1,0 +1,270 @@
+<html>
+<head>
+    <title>PDF Value Extractor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .header {
+            margin: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        .drop-area {
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            background-color: #fafafa;
+            margin: 10px 0;
+            cursor: pointer;
+            color: #888;
+        }
+        .drop-area:hover {
+            background-color: #eee;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        input[type=text] {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: calc(100% - 22px);
+        }
+        input[type=submit] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+        #results {
+            margin-top: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            overflow: hidden; /* Ensures the border-radius applies to the table inside */
+        }
+
+        #results table {
+            width: 100%;
+            border-collapse: separate; /* This allows applying border-spacing while still having separate borders */
+            border-spacing: 0; /* Removes the default spacing between borders */
+            margin-top: 10px; /* Adds some spacing between the table and anything above it */
+        }
+
+        #results th, #results td {
+            border: 1px solid #888; /* Dark gray border */
+            padding: 8px; /* Adjust padding as needed */
+            text-align: left; /* Aligns text to the left; adjust as needed */
+        }
+
+        #results th {
+            background-color: #f2f2f2; /* Light gray background for headers; adjust as needed */
+        }
+
+        /* First child (top-left corner) */
+        #results th:first-child {
+            border-top-left-radius: 4px;
+        }
+
+        /* Last child (top-right corner) of the first row */
+        #results th:last-child {
+            border-top-right-radius: 4px;
+        }
+
+        /* Apply rounded corners to the last <td> of the last row on both sides */
+        #results tr:last-child td:first-child {
+            border-bottom-left-radius: 4px;
+        }
+
+        #results tr:last-child td:last-child {
+            border-bottom-right-radius: 4px;
+        }
+            /* Button base styles */
+        #downloadResults {
+            margin-top: 20px; 
+            background-color: #3639d1; 
+            color: white; 
+            border: #292bc8; 
+            padding: 10px 15px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            transition: background-color 0.3s ease; /* Smooth transition for background color */
+        }
+
+        /* Hover effect */
+        #downloadResults:hover {
+            background-color: #3133af; /* Slightly darker green */
+        }
+
+        /* Active (click) effect */
+        #downloadResults:active {
+            background-color: #22247c; /* Even darker green */
+        }
+        #downloadResults.disabled, #downloadResults:disabled {
+            background-color: #cccccc; /* Grey color */
+            cursor: not-allowed; /* Change cursor to indicate the button is disabled */
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Extract Values from PDFs</div>
+    <form action="/search_multiple_pdfs/" enctype="multipart/form-data" method="post" id="pdfForm">
+        <div class="drop-area" id="drop-area">
+            <p>Drop files here or click to choose files</p>
+            <input name="files" type="file" multiple style="display: None" required>
+            <p id="file-count"></p>
+        </div>
+        <input name="search" type="text" placeholder="Enter search string" required>
+        <input type="submit" value="Search PDFs">
+    </form>
+    <div id="results"></div>
+    <button id="downloadResults" type="button" disabled class="disabled">Download CSV</button>
+
+
+<script>
+let csvContent = "";
+
+document.getElementById('drop-area').onclick = function(e) {
+    <!-- this.querySelector('input[type=file]').click(); -->
+    const fileInput = this.querySelector('input[type=file]');
+    fileInput.click();
+
+    // Update the file count when files are selected through the file dialog
+    fileInput.onchange = function() {
+        updateFileCount(this.files); // Update the file count display
+    };
+};
+document.getElementById('drop-area').ondrop = function(e) {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    this.querySelector('input[type=file]').files = files;
+    updateFileCount(files); // Update the file count display
+};
+document.getElementById('drop-area').ondragover = function(e) {
+    e.preventDefault();
+};
+
+function updateFileCount(files) {
+    const fileCountElement = document.getElementById('file-count');
+    if (files.length === 1) {
+        fileCountElement.textContent = '1 file uploaded.';
+    } else if (files.length > 1) {
+        fileCountElement.textContent = `${files.length} files uploaded.`;
+    } else {
+        fileCountElement.textContent = 'No files selected.';
+    }
+}
+
+document.getElementById('downloadResults').addEventListener('click', function() {
+    if (!csvContent) {
+        alert("No data available for download.");
+        return;
+    }
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "search_results.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
+
+document.getElementById('pdfForm').onsubmit = async function(e) {
+    e.preventDefault(); // Prevent the default form submission
+    var formData = new FormData(this); // Create FormData from the form
+
+    var response = await fetch('/search_multiple_pdfs/', {
+        method: 'POST',
+        body: formData
+    });
+    if (response.ok) {
+        var results = await response.json();
+        console.log(results);
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = ''; // Clear existing results
+        const resultHeader = document.createElement('h3');
+        resultHeader.textContent = `Search Results for: ${results.results[0].search_term}`;
+        resultsDiv.appendChild(resultHeader);
+        
+        // CSV Header
+        csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Filename,Search Term,Line Number,Line String,Value Extracted\r\n";
+
+        results.results.forEach(result => {
+            const fileHeader = document.createElement('h4');
+            fileHeader.textContent = `File: ${result.filename}`;
+            resultsDiv.appendChild(fileHeader);
+
+            if (Array.isArray(result.search_results)) {
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.border = "1";
+                
+                const thead = table.createTHead();
+                const rowHead = thead.insertRow();
+                const headers = ["Line Number", "Line String", "Value Extracted"];
+                headers.forEach(headerText => {
+                    let header = document.createElement("th");
+                    let textNode = document.createTextNode(headerText);
+                    header.appendChild(textNode);
+                    rowHead.appendChild(header);
+                });
+
+                const tbody = table.createTBody();
+                result.search_results.forEach(searchResult => {
+                    const row = tbody.insertRow();
+                    const cell1 = row.insertCell();
+                    const cell2 = row.insertCell();
+                    const cell3 = row.insertCell();
+                    cell1.textContent = searchResult.line_number;
+                    cell2.textContent = searchResult.line_string;
+                    cell3.textContent = searchResult.value_extracted !== null ? searchResult.value_extracted.toString() : "N/A";
+                    
+                    let csvrow = `"${result.filename}","${result.search_term}",`;
+                    csvrow += `"${searchResult.line_number}","${searchResult.line_string}","${searchResult.value_extracted}"\r\n`;
+                    csvContent += csvrow;
+                });
+                
+                resultsDiv.appendChild(table);
+            } else {
+                const errorMessage = document.createElement('div');
+                errorMessage.textContent = result.search_results;
+                resultsDiv.appendChild(errorMessage);
+
+                let csvrow = `"${result.filename}","${result.search_term}","N/A","${result.search_results}",null\r\n`;
+                csvContent += csvrow;
+            }
+        });
+
+        
+        const downloadButton = document.getElementById('downloadResults');
+        downloadButton.classList.remove('disabled');
+        downloadButton.removeAttribute('disabled');
+
+    } else {
+        console.error("Failed to submit the form:", response.statusText);
+        document.getElementById('results').textContent = "Error loading results.";
+    }
+};
+
+</script>
+</body>
+</html>
