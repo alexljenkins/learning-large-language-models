@@ -14,8 +14,33 @@
             font-size: 24px;
             color: #333;
         }
-        .drop-area {
+        .subheader {
+            margin: 10px;
+            line-height: 140%;
+            font-size: 16px;
+            color: #626262;
+            width: 90%;
+            margin: 0 auto;
             padding: 20px;
+            box-sizing: border-box;
+        }
+        @media (min-width: 992px) {
+            .subheader {
+              width: 50%;
+            }
+          }
+          @media (min-width: 1200px) {
+            .subheader {
+              width: 40%;
+            }
+          }
+          @media (min-width: 1700px) {
+            .subheader {
+              width: 30%;
+            }
+          }
+        .drop-area {
+            padding: 80px;
             border: 2px dashed #ccc;
             border-radius: 8px;
             background-color: #fafafa;
@@ -126,7 +151,8 @@
 </head>
 <body>
     <div class="header">Extract Values from PDFs</div>
-    <form action="/search_multiple_pdfs/" enctype="multipart/form-data" method="post" id="pdfForm">
+    <div class="subheader">Searches files for the given search string, then returns the first number on the same line (including decimals) after the search term. It will return all search matches so you can be sure it hasn't missed anything. But, be careful, as the search term is an exact match only.</div>
+    <form action="/search_pdfs/" enctype="multipart/form-data" method="post" id="pdfForm">
         <div class="drop-area" id="drop-area">
             <p>Drop files here or click to choose files</p>
             <input name="files" type="file" multiple style="display: None" required>
@@ -191,7 +217,7 @@ document.getElementById('pdfForm').onsubmit = async function(e) {
     e.preventDefault(); // Prevent the default form submission
     var formData = new FormData(this); // Create FormData from the form
 
-    var response = await fetch('/search_multiple_pdfs/', {
+    var response = await fetch('/search_pdfs/', {
         method: 'POST',
         body: formData
     });
