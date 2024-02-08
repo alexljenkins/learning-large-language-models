@@ -39,6 +39,16 @@
               width: 30%;
             }
           }
+          .hints {
+            margin: 0px;
+            line-height: 120%;
+            font-size: 16px;
+            color: #626262;
+            width: 90%;
+            margin: 0 auto;
+            padding: 0px;
+            box-sizing: border-box;
+        }
         .drop-area {
             padding: 80px;
             border: 2px dashed #ccc;
@@ -158,9 +168,14 @@
             <input name="files" type="file" multiple style="display: None" required>
             <p id="file-count"></p>
         </div>
-        <input name="search" type="text" placeholder="Enter search string" required>
+        <input name="search" type="text" placeholder="Enter search string (or regex)" required>
         <input type="submit" value="Search PDFs">
     </form>
+    <div class="header">Hints</div>
+    <div class="hints">
+        <p>If extracting just numbers, it'll try and parse it into a single number (per line extracted)</p>
+        <p>Extract all numbers: <code><strong>\d</strong></code></p>
+        <p>Extract the first block of numbers (with , . or space) after a given phrase: <code><strong>search_phrase.*?(\d(?:.?\d)*)</strong></code></p>
     <div id="results"></div>
     <button id="downloadResults" type="button" disabled class="disabled">Download CSV</button>
 

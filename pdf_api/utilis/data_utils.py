@@ -13,7 +13,7 @@ from pydantic import BaseModel
 class SearchResult(BaseModel):
     line_number: int
     line_string: str
-    value_extracted: Union[float, int, None]
+    value_extracted: Union[float, int, List[str]]
 
 class FileSearchResult(BaseModel):
     filepath: Optional[Path] = None
@@ -80,18 +80,17 @@ async def scan_for_pdfs(folder_path: Path) -> list[PDFFile]:
     return pdf_files
 
 
-async def search_lines(text: str, search_string: str):
+async def search_lines(text: str, search_regex: str):
     results = []
-    pattern = re.compile(re.escape(search_string))
+    pattern = re.compile(search_regex)
     try:
         for index, line in enumerate(text.splitlines()):
-            match = pattern.search(line)
-            if match:
-                extract = re.search(r"(\d[\d,]+[\.]?\d*)", line[match.end():])
+            matches = pattern.findall(line)
+            if matches:
                 try:
-                    extract = float(extract.group().replace(',', ''))  # type: ignore
+                    extract = float(''.join(re.sub(r"[^\d.]", "", match) for match in matches))
                 except Exception:
-                    extract = None
+                    extract = matches
                 result = SearchResult(
                     line_number = index + 1,
                     line_string = line,

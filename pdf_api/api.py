@@ -1,4 +1,3 @@
-from csv import excel
 import sys
 import webbrowser
 import threading
@@ -79,16 +78,6 @@ def run_production():
     browser_thread.start()
 
     server_thread.join()
-    import os
-    try:
-        os.system("taskkill /F /IM cmd.exe")
-    except:
-        pass
-    try:
-        exit()
-    except:
-        pass
-
 
 if __name__ == "__main__":
     run_production()
