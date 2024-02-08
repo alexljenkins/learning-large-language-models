@@ -22,6 +22,7 @@ torch = "^2.1.2"
 transformers = "^4.36.2"
 openllm = "^0.4.41"
 pymupdf = "^1.23.21"
+pyinstaller = "^6.3.0"
 
 
 [build-system]
