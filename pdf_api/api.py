@@ -1,3 +1,4 @@
+from csv import excel
 import sys
 import webbrowser
 import threading
@@ -52,9 +53,9 @@ def run_production():
 
     def open_browser(server):
         host, port = None, None
-        if not server.started or not hasattr(server, "servers") or not server.servers:
+        if not server.started and not hasattr(server, "servers"):
             sleep(1)
-        while not host or not port:
+        while not host and not port:
             for server in server.servers:
                 for socket in server.sockets:
                     if not socket:
@@ -67,17 +68,26 @@ def run_production():
 
         webbrowser.open(f"http://{host}:{port}")
 
-    config = uvicorn.Config(app, host="0.0.0.0", port=0, reload=False)
+    config = uvicorn.Config(app, host="127.0.0.1", port=0, reload=False)
     server = uvicorn.Server(config)
     
     server_thread = threading.Thread(target=run_server, args=(server,))
     browser_thread = threading.Thread(target=open_browser, args=(server,))
 
     server_thread.start()
+    sleep(3)
     browser_thread.start()
 
     server_thread.join()
-    browser_thread.join()
+    import os
+    try:
+        os.system("taskkill /F /IM cmd.exe")
+    except:
+        pass
+    try:
+        exit()
+    except:
+        pass
 
 
 if __name__ == "__main__":
